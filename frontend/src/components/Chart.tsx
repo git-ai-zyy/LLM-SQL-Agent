@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Line, Bar } from "react-chartjs-2";
+import { Line, Bar, Scatter } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -80,8 +80,12 @@ const Chart: React.FC<ChartProps> = ({ data, tableData, sql, chartType }) => {
       return <div>No data available</div>;
     }
 
+    console.log("This is char type");
+    console.log(chartType);
     switch (chartType) {
       case "Bar chart":
+        return <Bar ref={chartRef} data={data} options={options} />;
+      case "Histogram":
         return <Bar ref={chartRef} data={data} options={options} />;
       case "Line chart":
       default:

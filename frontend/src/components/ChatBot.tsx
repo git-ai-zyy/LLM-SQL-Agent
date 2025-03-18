@@ -65,7 +65,7 @@ const ChatBot: React.FC<ChatBotProps> = ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ query: input }),
+        body: JSON.stringify({ nl_query: input }),
       });
 
       if (!response.ok) {
@@ -84,26 +84,6 @@ const ChatBot: React.FC<ChatBotProps> = ({
       };
 
       setMessages((prevMessages) => [...prevMessages, botMessage]);
-
-      // // Update table data
-      // addOldData(data.generated_sql, data.query_result, input, data.chart_type);
-      // setTableData(data.query_result);
-
-      // // Update chart data
-      // const labels = data.query_result.map((row: any) => row.MaskedPRO);
-      // const chartData = {
-      //   labels,
-      //   datasets: [
-      //     {
-      //       label: "User Data",
-      //       data: data.query_result.map((row: any) => row.TotalPassQuantity),
-      //       borderColor: "rgb(75, 192, 192)",
-      //       backgroundColor: "rgba(75, 192, 192, 0.2)",
-      //       tension: 0.1,
-      //     },
-      //   ],
-      // };
-      // setChartData(chartData, input, data.chart_type);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -133,10 +113,6 @@ const ChatBot: React.FC<ChatBotProps> = ({
 
       const data = await response.json();
 
-      // Update table data
-      addOldData(data.generated_sql, data.query_result, sql, data.chart_type);
-      setTableData(data.query_result);
-
       // Update chart data
       const labels = data.query_result.map((row: any) => row.MaskedPRO);
       const chartData = {
@@ -144,14 +120,28 @@ const ChatBot: React.FC<ChatBotProps> = ({
         datasets: [
           {
             label: "User Data",
-            data: data.query_result.map((row: any) => row.TotalPassQuantity),
+            data: data.query_result.map((row: any) => row.TotalCartridges),
             borderColor: "rgb(75, 192, 192)",
             backgroundColor: "rgba(75, 192, 192, 0.2)",
             tension: 0.1,
           },
         ],
       };
+      setTableData(data.query_result);
       setChartData(chartData, sql, data.chart_type);
+
+      // Update table data
+      addOldData(
+        chartData,
+        data.query_result,
+        data.generated_sql,
+        data.chart_type
+      );
+      console.log("This is data");
+      console.log(data.generated_sql);
+      console.log(data.query_result);
+      console.log(data.chart_type);
+      console.log("This isEnd of  data");
     } catch (error) {
       console.error("Error:", error);
     }

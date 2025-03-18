@@ -26,7 +26,7 @@ ChartJS.register(
   Legend
 );
 
-SyntaxHighlighter.registerLanguage("sql", sql);
+// SyntaxHighlighter.registerLanguage("sql", sql);
 
 interface OldDataDisplayProps {
   data: any;
