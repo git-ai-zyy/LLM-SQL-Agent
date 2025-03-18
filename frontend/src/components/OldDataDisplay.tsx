@@ -15,6 +15,8 @@ import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
 import sql from "react-syntax-highlighter/dist/esm/languages/prism/sql";
 import { materialDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
+import { Chart } from "react-google-charts";
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -43,6 +45,24 @@ const OldDataDisplay: React.FC<OldDataDisplayProps> = ({
 }) => {
   const [isFolded, setIsFolded] = useState(true);
 
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Chat Analytics",
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
+  };
+
   const toggleFold = () => {
     setIsFolded(!isFolded);
   };
@@ -56,10 +76,10 @@ const OldDataDisplay: React.FC<OldDataDisplayProps> = ({
   const renderChart = () => {
     switch (chartType) {
       case "Bar chart":
-        return <Bar data={data} />;
+        return <Bar data={data} options={options} />;
       case "Line chart":
       default:
-        return <Line data={data} />;
+        return <Line data={data} options={options} />;
     }
   };
 
