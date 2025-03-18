@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Line, Bar, Scatter } from "react-chartjs-2";
+import { Line, Bar, Scatter, Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -87,6 +87,8 @@ const Chart: React.FC<ChartProps> = ({ data, tableData, sql, chartType }) => {
         return <Bar ref={chartRef} data={data} options={options} />;
       case "Histogram":
         return <Bar ref={chartRef} data={data} options={options} />;
+      case "Scatter plot":
+        return <Scatter ref={chartRef} data={data} options={options} />;
       case "Line chart":
       default:
         return <Line ref={chartRef} data={data} options={options} />;

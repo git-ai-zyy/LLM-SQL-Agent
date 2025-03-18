@@ -15,8 +15,6 @@ import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
 import sql from "react-syntax-highlighter/dist/esm/languages/prism/sql";
 import { materialDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
-import { Chart } from "react-google-charts";
-
 ChartJS.register(
   CategoryScale,
   LinearScale,

@@ -111,16 +111,24 @@ const ChatBot: React.FC<ChatBotProps> = ({
         throw new Error("Network response was not ok");
       }
 
+      console.log("Response:", response);
       const data = await response.json();
+      console.log(data);
 
       // Update chart data
-      const labels = data.query_result.map((row: any) => row.MaskedPRO);
+      // const keys = Object.keys(data.query_result[0]);
+      const keys = Object.entries(data.query_result[0]).map(
+        (entry) => entry[0]
+      );
+      console.log(data.query_result[0]);
+      console.log(keys);
+      const labels = data.query_result.map((row: any) => row[keys[0]]);
       const chartData = {
         labels,
         datasets: [
           {
             label: "User Data",
-            data: data.query_result.map((row: any) => row.TotalCartridges),
+            data: data.query_result.map((row: any) => row[keys[1]]),
             borderColor: "rgb(75, 192, 192)",
             backgroundColor: "rgba(75, 192, 192, 0.2)",
             tension: 0.1,
@@ -137,11 +145,6 @@ const ChatBot: React.FC<ChatBotProps> = ({
         data.generated_sql,
         data.chart_type
       );
-      console.log("This is data");
-      console.log(data.generated_sql);
-      console.log(data.query_result);
-      console.log(data.chart_type);
-      console.log("This isEnd of  data");
     } catch (error) {
       console.error("Error:", error);
     }
