@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Line, Bar } from "react-chartjs-2";
+import { Line, Bar, Scatter } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -75,6 +75,10 @@ const OldDataDisplay: React.FC<OldDataDisplayProps> = ({
     switch (chartType) {
       case "Bar chart":
         return <Bar data={data} options={options} />;
+      case "Histogram":
+        return <Bar data={data} options={options} />;
+      case "Scatter plot":
+        return <Scatter data={data} options={options} />;
       case "Line chart":
       default:
         return <Line data={data} options={options} />;

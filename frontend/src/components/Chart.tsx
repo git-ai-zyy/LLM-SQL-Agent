@@ -80,8 +80,6 @@ const Chart: React.FC<ChartProps> = ({ data, tableData, sql, chartType }) => {
       return <div>No data available</div>;
     }
 
-    console.log("This is char type");
-    console.log(data);
     switch (chartType) {
       case "Bar chart":
         return <Bar ref={chartRef} data={data} options={options} />;
