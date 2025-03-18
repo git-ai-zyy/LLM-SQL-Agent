@@ -8,7 +8,12 @@ import { highlight, languages } from "prismjs";
 import "prismjs/components/prism-sql";
 import "prismjs/themes/prism.css";
 
-const BACKEND_URL = "https://your-backend-url.com/api/execute-sql";
+// API URLs
+const BACKEND_URL = "http://127.0.0.1:5000/";
+const GET_HEATH = BACKEND_URL + "health";
+const PROCESS_QUERY_URL = BACKEND_URL + "process_query/";
+const PROCESS_SQL_URL = BACKEND_URL + "process_sql/";
+// =======================================================================================
 
 interface Message {
   id: number;
@@ -39,7 +44,7 @@ const ChatBot: React.FC<ChatBotProps> = ({
   const [input, setInput] = useState("");
   const [tableData, setTableDataState] = useState<any[]>([]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
@@ -50,18 +55,58 @@ const ChatBot: React.FC<ChatBotProps> = ({
       isUser: true,
     };
 
-    // Simulate bot response with formatted SQL
-    const botMessage: Message = {
-      id: Date.now() + 1,
-      text: format(
-        `SELECT id, name, email, created_at FROM users WHERE name = '${input}' ORDER BY created_at DESC LIMIT 10;`
-      ),
-      isUser: false,
-      isEditable: true,
-    };
-
-    setMessages([...messages, userMessage, botMessage]);
+    setMessages([...messages, userMessage]);
     setInput("");
+
+    try {
+      const response = await fetch(PROCESS_QUERY_URL, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query: input }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      console.log(data);
+
+      // Simulate bot response with formatted SQL
+      const botMessage: Message = {
+        id: Date.now() + 1,
+        text: format(data.generated_sql),
+        isUser: false,
+        isEditable: true,
+      };
+
+      setMessages((prevMessages) => [...prevMessages, botMessage]);
+
+      // // Update table data
+      // addOldData(data.generated_sql, data.query_result, input, data.chart_type);
+      // setTableData(data.query_result);
+
+      // // Update chart data
+      // const labels = data.query_result.map((row: any) => row.MaskedPRO);
+      // const chartData = {
+      //   labels,
+      //   datasets: [
+      //     {
+      //       label: "User Data",
+      //       data: data.query_result.map((row: any) => row.TotalPassQuantity),
+      //       borderColor: "rgb(75, 192, 192)",
+      //       backgroundColor: "rgba(75, 192, 192, 0.2)",
+      //       tension: 0.1,
+      //     },
+      //   ],
+      // };
+      // setChartData(chartData, input, data.chart_type);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   const handleEdit = (id: number, newText: string) => {
@@ -72,24 +117,21 @@ const ChatBot: React.FC<ChatBotProps> = ({
     );
   };
 
-  const handleSend = (sql: string) => {
-    // Simulate receiving data from the backend
-    setTimeout(() => {
-      const data = {
-        generated_sql:
-          "SELECT MaskedPRO, COUNT(DISTINCT CASE WHEN FillResult = 'Pass' THEN MaskedBarcodeId END) AS TotalPassQuantity FROM FillData GROUP BY MaskedPRO ORDER BY TotalPassQuantity DESC",
-        query_result: [
-          {
-            MaskedPRO: "0xFCBBDFFB66130F7A6F8048E8A4BFE711",
-            TotalPassQuantity: 973,
-          },
-          {
-            MaskedPRO: "0x27B1FED799DCE5B456D4D73FE916CECA",
-            TotalPassQuantity: 122,
-          },
-        ],
-        chart_type: "Bar chart",
-      };
+  const handleSend = async (sql: string) => {
+    try {
+      const response = await fetch(PROCESS_SQL_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ edited_sql: sql }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
 
       // Update table data
       addOldData(data.generated_sql, data.query_result, sql, data.chart_type);
@@ -110,44 +152,9 @@ const ChatBot: React.FC<ChatBotProps> = ({
         ],
       };
       setChartData(chartData, sql, data.chart_type);
-    }, 1000); // Simulate network delay
-
-    // Original handleSend function
-    /*
-    fetch(BACKEND_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ sql }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Success:", data);
-        // Update table data
-        addOldData(data.chartData, data.query_result, sql, data.chart_type);
-        setTableData(data.query_result);
-
-        // Update chart data
-        const labels = data.query_result.map((row: any) => row.MaskedPRO);
-        const chartData = {
-          labels,
-          datasets: [
-            {
-              label: "User Data",
-              data: data.query_result.map((row: any) => row.TotalPassQuantity),
-              borderColor: "rgb(75, 192, 192)",
-              backgroundColor: "rgba(75, 192, 192, 0.2)",
-              tension: 0.1,
-            },
-          ],
-        };
-        setChartData(chartData, sql, data.chart_type);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-    */
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (

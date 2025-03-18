@@ -27,8 +27,6 @@ ChartJS.register(
   Legend
 );
 
-SyntaxHighlighter.registerLanguage("sql", sql);
-
 interface ChartProps {
   data: any;
   tableData: any[];
@@ -78,6 +76,10 @@ const Chart: React.FC<ChartProps> = ({ data, tableData, sql, chartType }) => {
   };
 
   const renderChart = () => {
+    if (!data || !data.datasets) {
+      return <div>No data available</div>;
+    }
+
     switch (chartType) {
       case "Bar chart":
         return <Bar ref={chartRef} data={data} options={options} />;
