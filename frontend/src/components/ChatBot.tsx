@@ -43,6 +43,7 @@ const ChatBot: React.FC<ChatBotProps> = ({
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [tableData, setTableDataState] = useState<any[]>([]);
+  const [chartType, setChartType] = useState<string>("Line chart");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,6 +85,7 @@ const ChatBot: React.FC<ChatBotProps> = ({
       };
 
       setMessages((prevMessages) => [...prevMessages, botMessage]);
+      setChartType(data.chart_type);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -104,7 +106,7 @@ const ChatBot: React.FC<ChatBotProps> = ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ edited_sql: sql }),
+        body: JSON.stringify({ edited_sql: sql, chart_type: chartType }),
       });
 
       if (!response.ok) {
